@@ -1,5 +1,5 @@
 import {Elysia, InternalServerError, InvalidCookieSignature, NotFoundError, ParseError, ValidationError } from "elysia";
-import { ProblemError } from "./errors";
+import { HttpError, ProblemError } from "./errors";
 import { ElysiaCustomStatusResponse, InvalidFileType } from "elysia/error";
 
 export function elysiaHttpProblem() {
@@ -7,18 +7,14 @@ export function elysiaHttpProblem() {
     .error({'PROBLEM_ERROR': ProblemError})
     .onError({as: 'global'}, ({error, path, set }) => {
         if (error instanceof ProblemError) {
-            // TODO - handle this
+            return error.toJSON();
         }
 
         if (error instanceof ValidationError) {
-
         }
 
         if (error instanceof NotFoundError) {
-            const problem = new ProblemError(
-                "https://httpstatuses.com/404",
-                "Not Found",
-                404,
+            const problem = new HttpError.NotFound(
                 `The requested resource ${path} was not found`
             )
             set.status = problem.status;
@@ -28,10 +24,6 @@ export function elysiaHttpProblem() {
         if (error instanceof ParseError) {
 
         } 
-
-        if (error instanceof InternalServerError) {
-
-        }
 
         if (error instanceof InvalidCookieSignature) {
 
@@ -44,9 +36,11 @@ export function elysiaHttpProblem() {
         if (error instanceof ElysiaCustomStatusResponse) {
 
         }
-
-        if (error instanceof Error) {
-
+        
+        if (error instanceof InternalServerError || error instanceof Error) {
+            const problem = new HttpError.InternalServerError()
+            set.status = problem.status;
+            return problem.toJSON();
         }
     })
 }
