@@ -28,12 +28,20 @@ export class ProblemError extends Error {
 
 // 40X Errors
 class BadRequest extends ProblemError {
-    errors?: Array<{field: string, message: string}>;
+    errors?: Array<any>;
     
-    constructor(message: string, errors?: Array<{field: string, message: string}>) {
+    constructor(message: string, errors?: Array<any>) {
         super("https://httpstatuses.com/400", "Bad Request", 400, message);
 
         this.errors = errors;
+    }
+
+    toJSON() {
+        const base = super.toJSON();
+        return {
+            ...base,
+            ...(this.errors && {errors: this.errors})
+        }
     }
 }
 

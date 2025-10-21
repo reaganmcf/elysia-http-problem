@@ -1,6 +1,6 @@
-import {Elysia, InternalServerError, InvalidCookieSignature, NotFoundError, ParseError, ValidationError } from "elysia";
+import {Elysia, t, InternalServerError, InvalidCookieSignature, NotFoundError, ParseError, ValidationError } from "elysia";
 import { HttpError, ProblemError } from "./errors";
-import { ElysiaCustomStatusResponse, InvalidFileType } from "elysia/error";
+import { ElysiaCustomStatusResponse, InvalidFileType, mapValueError } from "elysia/error";
 
 export function elysiaHttpProblem() {
     return new Elysia({name: 'elysia-http-problem' })
@@ -11,6 +11,15 @@ export function elysiaHttpProblem() {
         }
 
         if (error instanceof ValidationError) {
+            // TODO - figure out why error.all throws an error - feels like an elysia bug
+            const errorObj = JSON.parse(error.message)
+
+            const problem = new HttpError.BadRequest(
+                "The request is invalid",
+                errorObj.errors
+            );
+            set.status = problem.status;
+            return problem.toJSON();
         }
 
         if (error instanceof NotFoundError) {
@@ -22,7 +31,7 @@ export function elysiaHttpProblem() {
         }
 
         if (error instanceof ParseError) {
-
+            
         } 
 
         if (error instanceof InvalidCookieSignature) {
