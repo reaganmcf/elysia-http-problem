@@ -1,8 +1,14 @@
 import { expect, describe, it } from "bun:test";
 import { HttpError } from "../src/errors";
-import { Elysia, InternalServerError, InvalidCookieSignature } from "elysia";
+import {
+  Elysia,
+  fileType,
+  InternalServerError,
+  InvalidCookieSignature,
+} from "elysia";
 import { elysiaHttpProblem } from "../src/index";
 import z from "zod";
+import { InvalidFileType } from "elysia/error";
 
 describe("HttpError.BadRequest", () => {
   it("should handle explicit HttpError.BadRequest", async () => {
@@ -105,6 +111,45 @@ describe("HttpError.BadRequest", () => {
       status: 400,
       detail: "The provided cookie signature is invalid",
       key: "foo",
+    });
+  });
+
+  it("should map elysia.InvalidFileType to HttpError.BadRequest", async () => {
+    const app = await new Elysia().use(elysiaHttpProblem()).post(
+      "/upload",
+      async ({ body }) => {
+        await fileType(body.file, "application/json");
+        return { success: true };
+      },
+      {
+        body: z.object({
+          file: z.file(),
+        }),
+      },
+    );
+
+    const jpegFile = new File(["dummy content"], "photo.jpg", {
+      type: "image/jpeg",
+    });
+
+    const formData = new FormData();
+    formData.append("file", jpegFile);
+    const res = await app.handle(
+      new Request("http://localhost/upload", {
+        method: "POST",
+        body: formData,
+      }),
+    );
+
+    const json = await res.json();
+    expect(res.status).toBe(400);
+    expect(json).toEqual({
+      type: "https://httpstatuses.com/400",
+      title: "Bad Request",
+      status: 400,
+      detail: "Invalid file type uploaded",
+      property: "file",
+      expected: "application/json",
     });
   });
 });

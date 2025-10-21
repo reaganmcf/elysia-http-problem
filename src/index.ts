@@ -8,7 +8,8 @@ import {
   ValidationError,
 } from "elysia";
 import { HttpError, ProblemError } from "./errors";
-import { ElysiaCustomStatusResponse, InvalidFileType } from "elysia/error";
+import { ElysiaCustomStatusResponse } from "elysia/error";
+import { InvalidFileType } from "elysia/error";
 
 export function elysiaHttpProblem() {
   return new Elysia({ name: "elysia-http-problem" })
@@ -46,7 +47,6 @@ export function elysiaHttpProblem() {
 
       // elysia sets this as a 400 for invalid cookies
       if (error instanceof InvalidCookieSignature) {
-        console.log(JSON.stringify(error));
         const problem = new HttpError.BadRequest(
           "The provided cookie signature is invalid",
           { key: error.key },
@@ -55,10 +55,18 @@ export function elysiaHttpProblem() {
         return problem.toJSON();
       }
 
+      // elysia set's this as 422 just like validation error - should we be consistent?
       if (error instanceof InvalidFileType) {
+        const problem = new HttpError.BadRequest(error.message, {
+          property: error.property,
+          expected: error.expected,
+        });
+        set.status = problem.status;
+        return problem.toJSON();
       }
 
       if (error instanceof ElysiaCustomStatusResponse) {
+        return;
       }
 
       if (error instanceof InternalServerError || error instanceof Error) {
