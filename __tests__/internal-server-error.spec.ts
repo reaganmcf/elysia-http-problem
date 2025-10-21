@@ -15,9 +15,12 @@ describe("HttpError.InternalServerError", () => {
     const json = await res.json();
 
     expect(res.status).toBe(500);
-    expect(json).toEqual(
-      new HttpError.InternalServerError("Database connection failed").toJSON(),
-    );
+    expect(json).toEqual({
+      type: "https://httpstatuses.com/500",
+      title: "Internal Server Error",
+      status: 500,
+      detail: "Database connection failed",
+    });
   });
 
   it("should map generic Error to InternalServerError", async () => {
@@ -31,7 +34,12 @@ describe("HttpError.InternalServerError", () => {
     const json = await res.json();
 
     expect(res.status).toBe(500);
-    expect(json).toEqual(new HttpError.InternalServerError().toJSON());
+    expect(json).toEqual({
+      type: "https://httpstatuses.com/500",
+      title: "Internal Server Error",
+      status: 500,
+      detail: "Something went wrong",
+    });
   });
 
   it("should map elysia.InternalServerError to HttpError.InternalServerError", async () => {
@@ -45,6 +53,11 @@ describe("HttpError.InternalServerError", () => {
     const json = await res.json();
 
     expect(res.status).toBe(500);
-    expect(json).toEqual(new HttpError.InternalServerError().toJSON());
+    expect(json).toEqual({
+      type: "https://httpstatuses.com/500",
+      title: "Internal Server Error",
+      status: 500,
+      detail: "Elysia internal error",
+    });
   });
 });

@@ -13,11 +13,12 @@ describe("HttpError.NotFound", () => {
     const json = await res.json();
 
     expect(res.status).toBe(404);
-    expect(json).toEqual(
-      new HttpError.NotFound(
-        "The requested resource /foo was not found",
-      ).toJSON(),
-    );
+    expect(json).toEqual({
+      type: "https://httpstatuses.com/404",
+      title: "Not Found",
+      status: 404,
+      detail: "The requested resource /foo was not found",
+    });
   });
 
   it("should map elysia.NotFound to HttpError.NotFound", async () => {
@@ -29,10 +30,11 @@ describe("HttpError.NotFound", () => {
     const json = await res.json();
 
     expect(res.status).toBe(404);
-    expect(json).toEqual(
-      new HttpError.NotFound(
-        "The requested resource /unknown was not found",
-      ).toJSON(),
-    );
+    expect(json).toEqual({
+      type: "https://httpstatuses.com/404",
+      title: "Not Found",
+      status: 404,
+      detail: "The requested resource /unknown was not found",
+    });
   });
 });
