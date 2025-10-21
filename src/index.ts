@@ -1,55 +1,63 @@
-import {Elysia, t, InternalServerError, InvalidCookieSignature, NotFoundError, ParseError, ValidationError } from "elysia";
+import {
+  Elysia,
+  t,
+  InternalServerError,
+  InvalidCookieSignature,
+  NotFoundError,
+  ParseError,
+  ValidationError,
+} from "elysia";
 import { HttpError, ProblemError } from "./errors";
-import { ElysiaCustomStatusResponse, InvalidFileType, mapValueError } from "elysia/error";
+import {
+  ElysiaCustomStatusResponse,
+  InvalidFileType,
+  mapValueError,
+} from "elysia/error";
 
 export function elysiaHttpProblem() {
-    return new Elysia({name: 'elysia-http-problem' })
-    .error({'PROBLEM_ERROR': ProblemError})
-    .onError({as: 'global'}, ({error, path, set }) => {
-        if (error instanceof ProblemError) {
-            return error.toJSON();
-        }
+  return new Elysia({ name: "elysia-http-problem" })
+    .error({ PROBLEM_ERROR: ProblemError })
+    .onError({ as: "global" }, ({ error, path, set }) => {
+      if (error instanceof ProblemError) {
+        return error.toJSON();
+      }
 
-        if (error instanceof ValidationError) {
-            // TODO - figure out why error.all throws an error - feels like an elysia bug
-            const errorObj = JSON.parse(error.message)
+      if (error instanceof ValidationError) {
+        // TODO - figure out why error.all throws an error - feels like an elysia bug
+        const errorObj = JSON.parse(error.message);
 
-            const problem = new HttpError.BadRequest(
-                "The request is invalid",
-                errorObj.errors
-            );
-            set.status = problem.status;
-            return problem.toJSON();
-        }
+        const problem = new HttpError.BadRequest(
+          "The request is invalid",
+          errorObj.errors,
+        );
+        set.status = problem.status;
+        return problem.toJSON();
+      }
 
-        if (error instanceof NotFoundError) {
-            const problem = new HttpError.NotFound(
-                `The requested resource ${path} was not found`
-            )
-            set.status = problem.status;
-            return problem.toJSON();
-        }
+      if (error instanceof NotFoundError) {
+        const problem = new HttpError.NotFound(
+          `The requested resource ${path} was not found`,
+        );
+        set.status = problem.status;
+        return problem.toJSON();
+      }
 
-        if (error instanceof ParseError) {
-            
-        } 
+      if (error instanceof ParseError) {
+      }
 
-        if (error instanceof InvalidCookieSignature) {
+      if (error instanceof InvalidCookieSignature) {
+      }
 
-        }
-        
-        if (error instanceof InvalidFileType) {
+      if (error instanceof InvalidFileType) {
+      }
 
-        }
+      if (error instanceof ElysiaCustomStatusResponse) {
+      }
 
-        if (error instanceof ElysiaCustomStatusResponse) {
-
-        }
-        
-        if (error instanceof InternalServerError || error instanceof Error) {
-            const problem = new HttpError.InternalServerError()
-            set.status = problem.status;
-            return problem.toJSON();
-        }
-    })
+      if (error instanceof InternalServerError || error instanceof Error) {
+        const problem = new HttpError.InternalServerError();
+        set.status = problem.status;
+        return problem.toJSON();
+      }
+    });
 }

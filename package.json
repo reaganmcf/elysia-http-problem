@@ -4,18 +4,20 @@
   "module": "src/index.ts",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": [
-    "./dist"
-  ],
+  "files": ["./dist"],
   "scripts": {
-    "prepublish": "bun test && bun tsc"
+    "prepare": "husky",
+    "prepublish": "bun test && bun tsc",
+    "lint": "biome lint --fix && biome format --fix"
   },
   "dependencies": {
     "elysia": "1.4.11",
     "zod": "^4.1.12"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@biomejs/biome": "1.9.4",
+    "@types/bun": "latest",
+    "husky": "^9.1.7"
   },
   "peerDependencies": {
     "typescript": "^5.9.3"
