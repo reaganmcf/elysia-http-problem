@@ -1,13 +1,14 @@
 {
   "name": "elysia-http-problem-json",
+  "version": "0.1.0",
   "type": "module",
   "module": "src/index.ts",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": ["./dist"],
   "scripts": {
-    "prepare": "husky",
-    "prepublishOnly": "bun test && bun tsc",
+    "prepare": "husky || true",
+    "prepublishOnly": "HUSKY=0 && bun test && bun tsc",
     "lint": "biome lint --fix && biome format --fix"
   },
   "dependencies": {
