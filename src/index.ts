@@ -55,11 +55,17 @@ export function elysiaHttpProblem() {
         return problem.toJSON();
       }
 
-      // elysia set's this as 422 just like validation error - should we be consistent?
-      if (error instanceof InvalidFileType) {
-        const problem = new HttpError.BadRequest(error.message, {
-          property: error.property,
-          expected: error.expected,
+      // https://github.com/elysiajs/elysia/issues/1500
+      // elysia < 1.4.13 will not pass this instanceof check correctly,
+      // hence the explicit cast
+      if (
+        error instanceof InvalidFileType ||
+        (error as InvalidFileType).code === "INVALID_FILE_TYPE"
+      ) {
+        const castedError = error as unknown as InvalidFileType;
+        const problem = new HttpError.BadRequest(castedError.message, {
+          property: castedError.property,
+          expected: castedError.expected,
         });
         set.status = problem.status;
         return problem.toJSON();

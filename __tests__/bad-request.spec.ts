@@ -147,8 +147,8 @@ describe("HttpError.BadRequest", () => {
       type: "https://httpstatuses.com/400",
       title: "Bad Request",
       status: 400,
-      detail: "Invalid file type uploaded",
-      property: "file",
+      detail: '"photo.jpg" has invalid file type',
+      property: "photo.jpg",
       expected: "application/json",
     });
   });
