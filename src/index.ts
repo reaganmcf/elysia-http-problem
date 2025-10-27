@@ -1,6 +1,5 @@
 import {
   Elysia,
-  t,
   InternalServerError,
   InvalidCookieSignature,
   NotFoundError,
@@ -12,7 +11,7 @@ import { ElysiaCustomStatusResponse } from "elysia/error";
 import { InvalidFileType } from "elysia/error";
 
 export function elysiaHttpProblem() {
-  return new Elysia({ name: "elysia-http-problem" })
+  return new Elysia({ name: "elysia-http-problem-json" })
     .error({ PROBLEM_ERROR: ProblemError })
     .onError({ as: "global" }, ({ error, path, set }) => {
       if (error instanceof ProblemError) {

@@ -1,5 +1,5 @@
 {
-  "name": "elysia-http-problem",
+  "name": "elysia-http-problem-json",
   "type": "module",
   "module": "src/index.ts",
   "main": "./dist/index.js",
@@ -7,7 +7,7 @@
   "files": ["./dist"],
   "scripts": {
     "prepare": "husky",
-    "prepublish": "bun test && bun tsc",
+    "prepublishOnly": "bun test && bun tsc",
     "lint": "biome lint --fix && biome format --fix"
   },
   "dependencies": {

@@ -1,72 +1,117 @@
-# elysia-http-problem
+# elysia-http-problem-json
 
-> **⚠️ Work in Progress** - This project is under active development and may have breaking changes.
+A simple plugin for Elysia that turns errors into nice JSON problem responses.
 
-A plugin for [Elysia.js](https://elysiajs.com/) that provides standardized HTTP problem responses in JSON format, following [RFC 7807](https://tools.ietf.org/html/rfc7807).
-
-## Installation
+## Install
 
 ```bash
-bun add elysia-http-problem
+bun add elysia-http-problem-json
 ```
 
-## Usage
-
-Import and use the plugin in your Elysia app:
+## Quick Start
 
 ```typescript
 import { Elysia } from 'elysia'
-import { elysiaHttpProblem } from 'elysia-http-problem'
+import { elysiaHttpProblem } from 'elysia-http-problem-json'
 
 const app = new Elysia()
   .use(elysiaHttpProblem())
-  .get('/', () => 'Hello World')
+  .get('/', () => 'Hello')
   .listen(3000)
 ```
 
-The plugin automatically converts Elysia errors into Problem JSON responses:
+It auto-converts Elysia errors:
 
-- `ValidationError` → 400 Bad Request
-- `NotFoundError` → 404 Not Found
-- `InternalServerError` or generic `Error` → 500 Internal Server Error
+- ValidationError → 400 Bad Request
+- NotFoundError → 404 Not Found
+- InvalidCookieSignature → 400 Bad Request
+- InvalidFileType → 400 Bad Request
+- InternalServerError/Error → 500 Internal Server Error
 
-## Manual Error Handling
+## Manual Errors
 
-You can also manually throw Problem errors:
+Throw your own:
 
 ```typescript
-import { HttpError } from 'elysia-http-problem'
+import { HttpError } from 'elysia-http-problem-json'
 
-app.get('/api/user/:id', ({ params: { id } }) => {
-  if (!userExists(id)) {
-    throw new HttpError.NotFound(`User ${id} not found`)
+app.get('/user/:id', ({ params }) => {
+  if (!userExists(params.id)) {
+    throw new HttpError.NotFound('User not found')
   }
-  return getUser(id)
+  return getUser(params.id)
 })
 ```
 
-## Available Errors
+## All Error Types
 
-The plugin provides error classes for common HTTP status codes:
+- BadRequest (400)
+- Unauthorized (401)
+- PaymentRequired (402)
+- Forbidden (403)
+- NotFound (404)
+- MethodNotAllowed (405)
+- NotAcceptable (406)
+- Conflict (409)
+- InternalServerError (500)
+- NotImplemented (501)
+- BadGateway (502)
+- ServiceUnavailable (503)
+- GatewayTimeout (504)
 
-- `HttpError.BadRequest` (400)
-- `HttpError.Unauthorized` (401)
-- `HttpError.Forbidden` (403)
-- `HttpError.NotFound` (404)
-- `HttpError.Conflict` (409)
-- `HttpError.InternalServerError` (500)
-- And more...
+## Response
 
-## Response Format
+Follows [RFC 7807](https://tools.ietf.org/html/rfc7807) Problem Details spec. All errors return JSON with standard fields plus extensions for extra info.
 
-All errors return a JSON response following RFC 7807:
+Examples:
 
+**Not Found (404):**
 ```json
 {
   "type": "https://httpstatuses.com/404",
   "title": "Not Found",
   "status": 404,
-  "detail": "The requested resource was not found"
+  "detail": "User not found"
+}
+```
+
+**Bad Request with validation errors (400):**
+```json
+{
+  "type": "https://httpstatuses.com/400",
+  "title": "Bad Request",
+  "status": 400,
+  "detail": "The request is invalid",
+  "errors": [
+    {
+      "code": "invalid_type",
+      "expected": "number",
+      "received": "string",
+      "path": ["id"],
+      "message": "Invalid input"
+    }
+  ]
+}
+```
+
+**Bad Request with invalid cookie (400):**
+```json
+{
+  "type": "https://httpstatuses.com/400",
+  "title": "Bad Request",
+  "status": 400,
+  "detail": "The provided cookie signature is invalid",
+  "key": "session"
+}
+```
+
+**Internal Server Error (500):**
+```json
+{
+  "type": "https://httpstatuses.com/500",
+  "title": "Internal Server Error",
+  "status": 500,
+  "detail": "Database connection failed"
 }
 ```
 

@@ -1,14 +1,8 @@
 import { expect, describe, it } from "bun:test";
 import { HttpError } from "../src/errors";
-import {
-  Elysia,
-  fileType,
-  InternalServerError,
-  InvalidCookieSignature,
-} from "elysia";
+import { Elysia, fileType, InvalidCookieSignature } from "elysia";
 import { elysiaHttpProblem } from "../src/index";
 import z from "zod";
-import { InvalidFileType } from "elysia/error";
 
 describe("HttpError.BadRequest", () => {
   it("should handle explicit HttpError.BadRequest", async () => {

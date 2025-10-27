@@ -1,6 +1,6 @@
 import { expect, describe, it } from "bun:test";
 import { HttpError } from "../src/errors";
-import { Elysia, InternalServerError } from "elysia";
+import { Elysia } from "elysia";
 import { elysiaHttpProblem } from "../src/index";
 
 describe("HttpError.NotFound", () => {
