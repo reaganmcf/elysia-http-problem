@@ -1,12 +1,12 @@
 import { expect, describe, it } from "bun:test";
 import { HttpError } from "../src/errors";
 import { Elysia } from "elysia";
-import { elysiaHttpProblem } from "../src/index";
+import { elysiaHttpProblemJson } from "../src/index";
 
 describe("HttpError.Unauthorized", () => {
   it("should handle explicit HttpError.Unauthorized", async () => {
     const app = await new Elysia()
-      .use(elysiaHttpProblem())
+      .use(elysiaHttpProblemJson())
       .get("/protected", () => {
         throw new HttpError.Unauthorized("Protected resource");
       });

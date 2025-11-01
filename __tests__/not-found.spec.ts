@@ -1,13 +1,17 @@
 import { expect, describe, it } from "bun:test";
 import { HttpError } from "../src/errors";
 import { Elysia } from "elysia";
-import { elysiaHttpProblem } from "../src/index";
+import { elysiaHttpProblemJson } from "../src/index";
 
 describe("HttpError.NotFound", () => {
   it("should handle explicit HttpError.NotFound", async () => {
-    const app = await new Elysia().use(elysiaHttpProblem()).get("/foo", () => {
-      throw new HttpError.NotFound("The requested resource /foo was not found");
-    });
+    const app = await new Elysia()
+      .use(elysiaHttpProblemJson())
+      .get("/foo", () => {
+        throw new HttpError.NotFound(
+          "The requested resource /foo was not found",
+        );
+      });
 
     const res = await app.handle(new Request("http://localhost/foo"));
     const json = await res.json();
@@ -23,7 +27,7 @@ describe("HttpError.NotFound", () => {
 
   it("should map elysia.NotFound to HttpError.NotFound", async () => {
     const app = await new Elysia()
-      .use(elysiaHttpProblem())
+      .use(elysiaHttpProblemJson())
       .get("/foo", () => "bar");
 
     const res = await app.handle(new Request("http://localhost/unknown"));

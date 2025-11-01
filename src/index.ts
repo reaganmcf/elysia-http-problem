@@ -10,7 +10,9 @@ import { HttpError, ProblemError } from "./errors";
 import { ElysiaCustomStatusResponse } from "elysia/error";
 import { InvalidFileType } from "elysia/error";
 
-export function elysiaHttpProblem() {
+export * from "./errors";
+
+export function elysiaHttpProblemJson() {
   return new Elysia({ name: "elysia-http-problem-json" })
     .error({ PROBLEM_ERROR: ProblemError })
     .onError({ as: "global" }, ({ error, path, set }) => {

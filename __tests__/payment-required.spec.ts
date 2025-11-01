@@ -1,12 +1,12 @@
 import { expect, describe, it } from "bun:test";
 import { HttpError } from "../src/errors";
 import { Elysia } from "elysia";
-import { elysiaHttpProblem } from "../src/index";
+import { elysiaHttpProblemJson } from "../src/index";
 
 describe("HttpError.PaymentRequired", () => {
   it("should handle explicit HttpError.PaymentRequired", async () => {
     const app = await new Elysia()
-      .use(elysiaHttpProblem())
+      .use(elysiaHttpProblemJson())
       .get("/resource", () => {
         throw new HttpError.PaymentRequired("Payment required");
       });

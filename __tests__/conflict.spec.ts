@@ -1,12 +1,12 @@
 import { expect, describe, it } from "bun:test";
 import { HttpError } from "../src/errors";
 import { Elysia } from "elysia";
-import { elysiaHttpProblem } from "../src/index";
+import { elysiaHttpProblemJson } from "../src/index";
 
 describe("HttpError.Conflict", () => {
   it("should handle explicit HttpError.Conflict", async () => {
     const app = await new Elysia()
-      .use(elysiaHttpProblem())
+      .use(elysiaHttpProblemJson())
       .get("/resource", () => {
         throw new HttpError.Conflict("Resource already exists");
       });

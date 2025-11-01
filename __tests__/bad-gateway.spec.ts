@@ -1,12 +1,12 @@
 import { expect, describe, it } from "bun:test";
 import { HttpError } from "../src/errors";
 import { Elysia } from "elysia";
-import { elysiaHttpProblem } from "../src/index";
+import { elysiaHttpProblemJson } from "../src/index";
 
 describe("HttpError.BadGateway", () => {
   it("should handle explicit HttpError.BadGateway", async () => {
     const app = await new Elysia()
-      .use(elysiaHttpProblem())
+      .use(elysiaHttpProblemJson())
       .get("/resource", () => {
         throw new HttpError.BadGateway("Bad gateway");
       });

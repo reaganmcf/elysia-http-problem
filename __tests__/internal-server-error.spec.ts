@@ -1,12 +1,12 @@
 import { expect, describe, it } from "bun:test";
 import { HttpError } from "../src/errors";
 import { Elysia, InternalServerError } from "elysia";
-import { elysiaHttpProblem } from "../src/index";
+import { elysiaHttpProblemJson } from "../src/index";
 
 describe("HttpError.InternalServerError", () => {
   it("should handle explicit InternalServerError", async () => {
     const app = await new Elysia()
-      .use(elysiaHttpProblem())
+      .use(elysiaHttpProblemJson())
       .get("/error", () => {
         throw new HttpError.InternalServerError("Database connection failed");
       });
@@ -25,7 +25,7 @@ describe("HttpError.InternalServerError", () => {
 
   it("should map generic Error to InternalServerError", async () => {
     const app = await new Elysia()
-      .use(elysiaHttpProblem())
+      .use(elysiaHttpProblemJson())
       .get("/error", () => {
         throw new Error("Something went wrong");
       });
@@ -44,7 +44,7 @@ describe("HttpError.InternalServerError", () => {
 
   it("should map elysia.InternalServerError to HttpError.InternalServerError", async () => {
     const app = await new Elysia()
-      .use(elysiaHttpProblem())
+      .use(elysiaHttpProblemJson())
       .get("/error", () => {
         throw new InternalServerError("Elysia internal error");
       });
