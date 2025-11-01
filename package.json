@@ -3,23 +3,19 @@
   "version": "0.1.0",
   "type": "module",
   "module": "src/index.ts",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    }
+    "require": "./dist/index.js",
+    "import": "./dist/index.js",
+    "node": "./dist/index.js",
+    "default": "./dist/index.js"
   },
-  "files": ["./dist"],
+  "types": "./dist/index.d.ts",
+  "files": ["dist"],
   "scripts": {
     "prepare": "husky || true",
     "prepublishOnly": "HUSKY=0 && bun test && bun tsc",
-    "build": "bun tsc",
+    "build": "rm -rf dist && bun build src/index.ts --outdir ./dist --target bun --minify --external elysia && tsc",
     "lint": "biome lint --fix && biome format --fix"
-  },
-  "dependencies": {
-    "elysia": ">=1.4.11"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
@@ -28,8 +24,13 @@
     "zod": "^4.1.12"
   },
   "peerDependencies": {
-    "typescript": "^5.9.3"
+    "typescript": "^5.0.0",
+    "elysia": ">=1.4.11"
   },
   "keywords": ["elysia", "problem", "json", "http", "bun"],
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/reaganmcf/elysia-http-problem-json"
+  }
 }
