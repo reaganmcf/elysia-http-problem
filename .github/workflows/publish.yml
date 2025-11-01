@@ -44,7 +44,7 @@ jobs:
   pre-checks:
     name: 🔍 Pre-publish Checks
     runs-on: ubuntu-latest
-    if: github.repository == 'rmcfarland/elysia-http-problem-json'
+    if: github.repository == 'reaganmcf/elysia-http-problem-json'
     
     outputs:
       version: ${{ steps.version.outputs.version }}
@@ -146,7 +146,7 @@ jobs:
     name: 📦 Publish to npm
     runs-on: ubuntu-latest
     needs: pre-checks
-    if: github.repository == 'rmcfarland/elysia-http-problem-json' && !inputs.dry_run
+    if: github.repository == 'reaganmcf/elysia-http-problem-json' && !inputs.dry_run
     
     environment:
       name: npm
@@ -215,7 +215,7 @@ jobs:
     name: 📋 Post-publish Tasks
     runs-on: ubuntu-latest
     needs: [pre-checks, publish-npm]
-    if: always() && github.repository == 'rmcfarland/elysia-http-problem-json' && !inputs.dry_run
+    if: always() && github.repository == 'reaganmcf/elysia-http-problem-json' && !inputs.dry_run
     
     steps:
       - name: 📋 Publish Summary
