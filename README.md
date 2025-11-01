@@ -1,6 +1,6 @@
 # elysia-http-problem-json
 
-A simple plugin for Elysia that turns errors into nice JSON problem responses.
+A simple plugin for Elysia that turns errors into RFC 7807 Problem Details JSON responses.
 
 ## Install
 
@@ -11,39 +11,45 @@ bun add elysia-http-problem-json
 ## Quick Start
 
 ```typescript
-import { Elysia } from 'elysia'
-import { elysiaHttpProblem } from 'elysia-http-problem-json'
+import { Elysia, t } from 'elysia'
+import { httpProblemJsonPlugin, HttpError } from 'elysia-http-problem-json'
 
 const app = new Elysia()
-  .use(elysiaHttpProblem())
-  .get('/', () => 'Hello')
+  .use(httpProblemJsonPlugin())
+  .get('/user/:id', ({ params }) => {
+    const user = db.findUser(params.id)
+    if (!user) throw new HttpError.NotFound('User not found')
+    return user
+  })
+  .post('/user', ({ body }) => {
+    return createUser(body)
+  }, {
+    body: t.Object({
+      email: t.String({ format: 'email' }),
+      age: t.Number({ minimum: 18 })
+    })
+  })
   .listen(3000)
 ```
 
-It auto-converts Elysia errors:
-
-- ValidationError → 400 Bad Request
-- NotFoundError → 404 Not Found
-- InvalidCookieSignature → 400 Bad Request
-- InvalidFileType → 400 Bad Request
-- InternalServerError/Error → 500 Internal Server Error
-
-## Manual Errors
-
-Throw your own:
-
-```typescript
-import { HttpError } from 'elysia-http-problem-json'
-
-app.get('/user/:id', ({ params }) => {
-  if (!userExists(params.id)) {
-    throw new HttpError.NotFound('User not found')
-  }
-  return getUser(params.id)
-})
+**Returns [RFC 7807](https://tools.ietf.org/html/rfc7807) Problem Details:**
+```json
+{
+  "type": "https://httpstatuses.com/404",
+  "title": "Not Found",
+  "status": 404,
+  "detail": "User not found"
+}
 ```
 
-## All Error Types
+## Features
+
+- **Auto-converts Elysia errors** – ValidationError, NotFoundError, InvalidCookieSignature, and more
+- **Throw custom errors** – Clean HttpError classes for all common status codes  
+- **RFC 7807 compliant** – Standard Problem Details JSON format  
+- **Extensions supported** – Add custom fields to error responses
+
+## Available Error Types
 
 - BadRequest (400)
 - Unauthorized (401)
@@ -59,23 +65,9 @@ app.get('/user/:id', ({ params }) => {
 - ServiceUnavailable (503)
 - GatewayTimeout (504)
 
-## Response
+## Response Examples
 
-Follows [RFC 7807](https://tools.ietf.org/html/rfc7807) Problem Details spec. All errors return JSON with standard fields plus extensions for extra info.
-
-Examples:
-
-**Not Found (404):**
-```json
-{
-  "type": "https://httpstatuses.com/404",
-  "title": "Not Found",
-  "status": 404,
-  "detail": "User not found"
-}
-```
-
-**Bad Request with validation errors (400):**
+**Validation Error (400):**
 ```json
 {
   "type": "https://httpstatuses.com/400",
@@ -87,21 +79,10 @@ Examples:
       "code": "invalid_type",
       "expected": "number",
       "received": "string",
-      "path": ["id"],
+      "path": ["age"],
       "message": "Invalid input"
     }
   ]
-}
-```
-
-**Bad Request with invalid cookie (400):**
-```json
-{
-  "type": "https://httpstatuses.com/400",
-  "title": "Bad Request",
-  "status": 400,
-  "detail": "The provided cookie signature is invalid",
-  "key": "session"
 }
 ```
 

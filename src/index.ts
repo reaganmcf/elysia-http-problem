@@ -12,7 +12,7 @@ import { InvalidFileType } from "elysia/error";
 
 export * from "./errors";
 
-export function elysiaHttpProblemJson() {
+export function httpProblemJsonPlugin() {
   return new Elysia({ name: "elysia-http-problem-json" })
     .error({ PROBLEM_ERROR: ProblemError })
     .onError({ as: "global" }, ({ error, path, set }) => {

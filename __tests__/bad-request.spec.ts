@@ -1,13 +1,13 @@
 import { expect, describe, it } from "bun:test";
 import { HttpError } from "../src/errors";
 import { Elysia, fileType, InvalidCookieSignature } from "elysia";
-import { elysiaHttpProblemJson } from "../src/index";
+import { httpProblemJsonPlugin } from "../src/index";
 import z from "zod";
 
 describe("HttpError.BadRequest", () => {
   it("should handle explicit HttpError.BadRequest", async () => {
     const app = await new Elysia()
-      .use(elysiaHttpProblemJson())
+      .use(httpProblemJsonPlugin())
       .get("/foo", () => {
         throw new HttpError.BadRequest("This is a bad request", {
           field: "name",
@@ -30,7 +30,7 @@ describe("HttpError.BadRequest", () => {
   });
 
   it("should map elysia.ValidationError to HttpError.BadRequest", async () => {
-    const app = await new Elysia().use(elysiaHttpProblemJson()).get(
+    const app = await new Elysia().use(httpProblemJsonPlugin()).get(
       "/foo/:id",
       ({ params }) => {
         return params.id;
@@ -65,7 +65,7 @@ describe("HttpError.BadRequest", () => {
 
   it("should map elysia.ParseError  to HttpError.BadRequest", async () => {
     const app = await new Elysia()
-      .use(elysiaHttpProblemJson())
+      .use(httpProblemJsonPlugin())
       .post("/foo", ({ body }) => {
         return body;
       });
@@ -92,7 +92,7 @@ describe("HttpError.BadRequest", () => {
 
   it("should map elysia.InvalidCookieSignature to HttpError.Unauthorized", async () => {
     const app = await new Elysia()
-      .use(elysiaHttpProblemJson())
+      .use(httpProblemJsonPlugin())
       .get("/protected", () => {
         throw new InvalidCookieSignature("foo");
       });
@@ -111,7 +111,7 @@ describe("HttpError.BadRequest", () => {
   });
 
   it("should map elysia.InvalidFileType to HttpError.BadRequest", async () => {
-    const app = await new Elysia().use(elysiaHttpProblemJson()).post(
+    const app = await new Elysia().use(httpProblemJsonPlugin()).post(
       "/upload",
       async ({ body }) => {
         await fileType(body.file, "application/json");

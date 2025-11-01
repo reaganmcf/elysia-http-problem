@@ -1,12 +1,12 @@
 import { expect, describe, it } from "bun:test";
 import { HttpError } from "../src/errors";
 import { Elysia } from "elysia";
-import { elysiaHttpProblemJson } from "../src/index";
+import { httpProblemJsonPlugin } from "../src/index";
 
 describe("HttpError.NotImplemented", () => {
   it("should handle explicit HttpError.NotImplemented", async () => {
     const app = await new Elysia()
-      .use(elysiaHttpProblemJson())
+      .use(httpProblemJsonPlugin())
       .get("/resource", () => {
         throw new HttpError.NotImplemented("Not implemented");
       });
