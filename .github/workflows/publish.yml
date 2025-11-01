@@ -87,7 +87,7 @@ jobs:
           # Check if main exports are present
           node -e "
             const pkg = require('./dist/index.js');
-            if (!pkg.elysiaHttpProblemJson) throw new Error('Missing elysiaHttpProblemJson export');
+            if (!pkg.httpProblemJsonPlugin) throw new Error('Missing httpProblemJsonPlugin export');
             if (!pkg.ProblemError) throw new Error('Missing ProblemError export');
             if (!pkg.HttpError) throw new Error('Missing HttpError export');
             console.log('✅ All main exports are present');
